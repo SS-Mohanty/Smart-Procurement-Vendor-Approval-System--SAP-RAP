@@ -1,8 +1,0 @@
-@EndUserText.label: 'Service Definition for Smart Procurement System'
-define service ZUI_PROJ_PR_HDR {
-  expose ZC_PROJ_PR_HDR    as PurchaseRequest;
-  expose ZC_PROJ_PR_ITEM   as PurchaseRequestItem;
-  expose ZI_PROJ_EMPLOYEE  as EmployeeValueHelp;
-  expose ZI_PROJ_VENDOR    as VendorValueHelp;
-  expose ZI_PROJ_APPR_HIST as ApprovalHistory;
-}
