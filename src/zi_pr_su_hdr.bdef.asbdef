@@ -1,0 +1,169 @@
+managed implementation in class zbp_i_pr_su_hdr unique;
+strict ( 2 );
+with draft;
+
+/* ===============================================================
+   1. ROOT ENTITY: Purchase Request Header
+   =============================================================== */
+define behavior for ZI_PR_SU_HDR alias PurchaseRequest
+persistent table zpr_su_hdr
+draft table zpr_su_d_hdr
+lock master total etag LastChangedAt
+authorization master ( instance, global )
+etag master LocalLastChangedAt
+//with additional save
+{
+  create;
+  update ( features : instance );
+  delete ( features : instance );
+  association _Items { create; with draft; }
+  //association _History { create; with draft; }
+  /* FIXED: Expose the composition using the 'association' keyword in the BDEF */
+  association _History { create; with draft; }
+  field ( readonly, numbering : managed ) PurchaseRequestUuid;
+  field ( readonly ) RequestNumber,
+                     Status,
+                     OverallAmount,
+                     PaymentQrUrl,
+                     ReceiptFile,
+                     ReceiptFilename,
+                     ReceiptMimetype,
+                     CreatedBy,
+                     CreatedOn,
+                     LastChangedAt,
+                     LocalLastChangedAt;
+
+  field ( mandatory ) RequestTitle,
+                      RequiredByDate,
+                      RequesterUuid;
+
+  /* Draft Lifecycle Actions */
+  draft action ( features : instance ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validateRequester;
+    validation validateTitle;
+    validation validateRequiredDate;
+    validation validateVendorBeforeComplete;
+    validation PurchaseRequestItem~validateQuantity;
+    validation PurchaseRequestItem~validatePrice;
+  }
+
+  /* Custom Workflow & Fintech Actions */
+  action ( features : instance ) Submit result [1] $self;
+  action ( features : instance ) Approve result [1] $self;
+  action ( features : instance ) Reject parameter ZI_PR_SU_REJ_PARAM result [1] $self;
+  action ( features : instance ) AssignVendor result [1] $self;
+  action ( features : instance ) GenerateReceipt result [1] $self;
+  action ( features : instance ) Complete result [1] $self;
+
+  /* Automated Determinations */
+  determination setDefaultStatus on modify { create; }
+  determination generateRequestNumber on modify { create; }
+  determination generatePaymentQR on modify { field VendorUuid, OverallAmount; }
+
+  /* Business Rules & Validations */
+  validation validateRequester on save { field RequesterUuid; create; }
+  validation validateTitle on save { field RequestTitle; create; update; }
+  validation validateRequiredDate on save { field RequiredByDate; create; update; }
+  validation validateVendorBeforeComplete on save { field Status, VendorUuid; create; update; }
+
+  mapping for zpr_su_hdr
+  {
+    PurchaseRequestUuid   = purchase_request_uuid;
+    RequestNumber         = request_number;
+    RequesterUuid         = requester_uuid;
+    VendorUuid            = vendor_uuid;
+    RequestTitle          = request_title;
+    RequestDescription    = request_description;
+    RequiredByDate        = required_by_date;
+    Status                = status;
+    RejectionReason       = rejection_reason;
+    OverallAmount         = overall_amount;
+    CurrencyCode          = currency_code;
+    PaymentQrUrl          = payment_qr_url;
+    ReceiptFile           = receipt_file;
+    ReceiptFilename       = receipt_filename;
+    ReceiptMimetype       = receipt_mimetype;
+    CreatedBy             = created_by;
+    CreatedOn             = created_on;
+    LocalLastChangedAt    = local_last_changed_at;
+    LastChangedAt         = last_changed_at;
+  }
+}
+
+/* ===============================================================
+   2. CHILD ENTITY: Purchase Request Item
+   =============================================================== */
+define behavior for ZI_PR_SU_ITEM alias PurchaseRequestItem
+persistent table zpr_su_item
+draft table zpr_su_d_item
+lock dependent by _Header
+authorization dependent by _Header
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+  association _Header { with draft; }
+
+  field ( readonly, numbering : managed ) PurchaseRequestItemUuid;
+  /* FIXED: Added ItemNumber and CurrencyCode to readonly so Fiori Create never dumps */
+
+  field ( readonly ) PurchaseRequestUuid,  LineTotal, LocalLastChangedAt;
+  field ( mandatory ) ItemNumber, ItemDescription, Quantity, UnitPrice;
+
+
+  determination calculateTotalAmount on modify { create; delete; field Quantity, UnitPrice; }
+
+  validation validateQuantity on save { field Quantity; create; update; }
+  validation validatePrice on save { field UnitPrice; create; update; }
+
+  mapping for zpr_su_item
+  {
+    PurchaseRequestItemUuid = purchase_request_item_uuid;
+    PurchaseRequestUuid     = purchase_request_uuid;
+    ItemNumber              = item_number;
+    ItemDescription         = item_description;
+    Quantity                = quantity;
+    UnitOfMeasure           = unit_of_measure;
+    UnitPrice               = unit_price;
+    LineTotal               = line_total;
+    CurrencyCode            = currency_code;
+    LocalLastChangedAt      = local_last_changed_at;
+  }
+}
+
+/* ===============================================================
+   3. CHILD ENTITY: Approval History
+   =============================================================== */
+define behavior for ZI_PR_SU_HIST alias ApprovalHistory
+persistent table zpr_su_hist
+draft table zpr_su_d_hist
+lock dependent by _Header
+authorization dependent by _Header
+etag master PerformedAt
+{
+  internal update;
+  internal delete;
+  association _Header { with draft; }
+
+  field ( readonly, numbering : managed ) ApprovalHistoryUuid;
+  //field ( readonly ) PurchaseRequestUuid, EventType, OldStatus, NewStatus, PerformedBy, PerformedAt, Comments;
+  /* RAP automatically fills PerformedBy and PerformedAt. We allow the backend to insert the rest. */
+  field ( readonly ) PurchaseRequestUuid, PerformedBy, PerformedAt;
+  field ( readonly : update ) EventType, OldStatus, NewStatus, Comments;
+  mapping for zpr_su_hist
+  {
+    ApprovalHistoryUuid   = approval_history_uuid;
+    PurchaseRequestUuid   = purchase_request_uuid;
+    EventType             = event_type;
+    OldStatus             = old_status;
+    NewStatus             = new_status;
+    PerformedBy           = performed_by;
+    PerformedAt           = performed_at;
+    Comments              = comments;
+  }
+}

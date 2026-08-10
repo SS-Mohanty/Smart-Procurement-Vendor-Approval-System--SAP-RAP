@@ -1,0 +1,39 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_PR_SU_EMP_HDR alias PurchaseRequest
+{
+  use create;
+  use update;
+  use delete;
+
+  /* Employee cannot touch Vendor details, Fintech outputs, or Rejection Reason */
+  field ( readonly ) VendorUuid, PaymentQrUrl, ReceiptFile, ReceiptFilename, ReceiptMimetype, RejectionReason;
+  /* Only expose Submit action to Employee */
+  use action Submit;
+
+  /* Draft Lifecycle */
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use association _Items { create; with draft; }
+  use association _History { with draft; }
+}
+
+define behavior for ZC_PR_SU_EMP_ITEM alias PurchaseRequestItem
+{
+  use update;
+  use delete;
+
+  use association _Header { with draft; }
+}
+
+/* <-- STEP 2: Added at the very bottom --> */
+define behavior for ZC_PR_SU_EMP_HIST alias ApprovalHistory
+{
+  use association _Header { with draft; }
+}

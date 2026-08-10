@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service Definition - Manager PR App'
+define service ZUI_PR_SU_MGR_O4 {
+  expose ZC_PR_SU_MGR_HDR  as PurchaseRequest;
+  expose ZC_PR_SU_MGR_ITEM as PurchaseRequestItem;
+  expose ZC_PR_SU_MGR_HIST as ApprovalHistory;
+  expose ZI_PR_SU_EMPLOYEE as EmployeeValueHelp;
+  expose ZI_PR_SU_VENDOR   as VendorValueHelp;
+}

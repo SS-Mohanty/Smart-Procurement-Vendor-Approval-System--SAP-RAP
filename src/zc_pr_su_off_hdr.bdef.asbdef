@@ -1,0 +1,39 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_PR_SU_OFF_HDR alias PurchaseRequest
+{
+  use update;
+
+  /* Keep core request read-only, but leave VendorUuid editable for assignment */
+  field ( readonly ) RequestTitle, RequestDescription, RequiredByDate,
+                     RequesterUuid, OverallAmount;
+
+  /* Expose Procurement Officer actions */
+  use action AssignVendor;
+  use action GenerateReceipt;
+  use action Complete;
+
+  /* Draft Lifecycle */
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use association _Items { with draft; }
+  use association _History { with draft; }
+}
+
+define behavior for ZC_PR_SU_OFF_ITEM alias PurchaseRequestItem
+{
+  /* Lock down Item budget quantities and prices */
+  field ( readonly ) ItemDescription, Quantity, UnitPrice, LineTotal;
+
+  use association _Header { with draft; }
+}
+define behavior for ZC_PR_SU_OFF_HIST alias ApprovalHistory
+{
+  use association _Header { with draft; }
+}

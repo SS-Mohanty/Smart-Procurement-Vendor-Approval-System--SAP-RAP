@@ -1,0 +1,40 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_PR_SU_MGR_HDR alias PurchaseRequest
+{
+  use update;
+
+  /* Lock down all Header inputs so Managers review without modifying data */
+  field ( readonly ) RequestTitle, RequestDescription, RequiredByDate,
+                     RequesterUuid, VendorUuid, OverallAmount, CurrencyCode,
+                     PaymentQrUrl, ReceiptFile, ReceiptFilename, ReceiptMimetype;
+
+  /* Only expose Manager approval actions */
+  use action Approve;
+  use action Reject;
+
+  /* Draft Lifecycle */
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use association _Items { with draft; }
+  use association _History { with draft; }
+}
+
+
+define behavior for ZC_PR_SU_MGR_ITEM alias PurchaseRequestItem
+{
+  /* Lock down Item quantities and prices */
+  field ( readonly ) ItemDescription, Quantity, UnitPrice, LineTotal;
+
+  use association _Header { with draft; }
+}
+define behavior for ZC_PR_SU_MGR_HIST alias ApprovalHistory
+{
+  use association _Header { with draft; }
+}

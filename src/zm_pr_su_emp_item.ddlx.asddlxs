@@ -1,0 +1,70 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Requested Item',
+    typeNamePlural: 'Requested Items',
+    typeImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bd/Odisha_University_of_Technology_and_Research_Logo.png',
+    title: { type: #STANDARD, label: 'Item Number', value: 'ItemNumber' },
+    description: { type: #STANDARD, value: 'ItemDescription' }
+  }
+}
+annotate view ZC_PR_SU_EMP_ITEM with
+{
+  @UI.facet: [
+    {
+      id: 'ItemData',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Item Line Details',
+      position: 10
+    }
+  ]
+
+  @UI.hidden: true
+  PurchaseRequestItemUuid;
+
+  @UI.hidden: true
+  PurchaseRequestUuid;
+
+  @UI: {
+    lineItem:       [ { position: 10, label: 'Item Number' } ],
+    identification: [ { position: 10, label: 'Item Number' } ]
+  }
+  ItemNumber;
+
+  @UI: {
+    lineItem:       [ { position: 20, label: 'Description' } ],
+    identification: [ { position: 20, label: 'Description' } ]
+  }
+  ItemDescription;
+
+  @UI: {
+    lineItem:       [ { position: 30, label: 'Quantity' } ],
+    identification: [ { position: 30, label: 'Quantity' } ]
+  }
+  Quantity;
+
+  @UI: {
+    lineItem:       [ { position: 40, label: 'UoM' } ],
+    identification: [ { position: 40, label: 'Unit of Measure' } ]
+  }
+  UnitOfMeasure;
+
+  @UI: {
+    lineItem:       [ { position: 50, label: 'Unit Price' } ],
+    identification: [ { position: 50, label: 'Unit Price' } ]
+  }
+  UnitPrice;
+
+  @UI: {
+    lineItem:       [ { position: 60, label: 'Line Total' } ],
+    identification: [ { position: 60, label: 'Calculated Line Total' } ]
+  }
+  LineTotal;
+
+  @UI.hidden: true
+  CurrencyCode;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

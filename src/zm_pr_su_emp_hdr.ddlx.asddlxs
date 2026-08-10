@@ -1,0 +1,136 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Purchase Requisition (Employee)',
+    typeNamePlural: 'My Requisitions',
+    typeImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bd/Odisha_University_of_Technology_and_Research_Logo.png',
+    title: { type: #STANDARD, label: 'Purchase Request', value: 'RequestNumber' },
+    description: { type: #STANDARD, value: 'RequestTitle' }
+  }
+}
+annotate view ZC_PR_SU_EMP_HDR with
+{
+  /* --- 1. Object Page Layout (Facets) --- */
+  @UI.facet: [
+    {
+      id: 'HeaderData',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'General Information',
+      position: 10
+    },
+    {
+      id: 'ItemsData',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Requested Items',
+      position: 20,
+      targetElement: '_Items'
+    },
+    /* NEW: Adds the Audit History Table to the Fiori Object Page */
+    { id: 'AuditLog',   
+     purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,    
+     label: 'Audit History',   
+      position: 30, 
+      targetElement: '_History' }
+  ]
+
+  /* --- 2. Field-Level UI Annotations --- */
+  @UI.hidden: true
+  PurchaseRequestUuid;
+
+  @UI: {
+    lineItem:       [ { position: 10, label: 'PR Number' },
+                      { type: #FOR_ACTION, dataAction: 'Submit', label: 'Submit for Approval', position: 1 } ],
+    identification: [ { position: 10, label: 'PR Number' },
+                      { type: #FOR_ACTION, dataAction: 'Submit', label: 'Submit for Approval', position: 1 } ],
+    selectionField: [ { position: 10 } ]
+  }
+  RequestNumber;
+
+  @UI: {
+    lineItem:       [ { position: 20, label: 'Request Title' } ],
+    identification: [ { position: 20, label: 'Request Title' } ],
+    selectionField: [ { position: 20 } ]
+  }
+  RequestTitle;
+
+  @UI: {
+    identification: [ { position: 30, label: 'Description / Purpose' } ]
+  }
+  RequestDescription;
+
+  @UI: {
+    lineItem:       [ { position: 30, label: 'Requester' } ],
+    identification: [ { position: 40, label: 'Requester Employee' } ],textArrangement: #TEXT_ONLY
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_PR_SU_EMPLOYEE', element: 'EmployeeUuid' } }]
+  RequesterUuid;
+  /* Hide the raw RequesterName column from showing as a duplicate field */
+  @UI.hidden: true
+  RequesterName;
+
+  @UI: {
+    identification: [ { position: 50, label: 'Assigned Vendor (Read-Only)' } ]
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_PR_SU_VENDOR', element: 'VendorUuid' } }]
+  VendorUuid;
+
+  @UI: {
+    lineItem:       [ { position: 40, label: 'Required By Date' } ],
+    identification: [ { position: 60, label: 'Required By Date' } ]
+  }
+  RequiredByDate;
+
+  @UI: {
+    lineItem:       [ { position: 50, label: 'Status' } ],
+    identification: [ { position: 70, label: 'Current Status' } ],
+    selectionField: [ { position: 30 } ]
+  }
+  Status;
+
+  @UI: {
+    lineItem:       [ { position: 60, label: 'Total Amount' } ],
+    identification: [ { position: 80, label: 'Total Amount' } ]
+  }
+  OverallAmount;
+
+ /* Display Rejection Reason so Employee can read Manager feedback when rejected */
+  @UI: {
+    identification: [ { position: 90, label: 'Rejection Reason (Manager Feedback)' } ]
+  }
+  RejectionReason;
+
+  @UI: {
+    identification: [ { position: 100, label: 'Created By' } ]
+  }
+  CreatedBy;
+
+  @UI: {
+    identification: [ { position: 110, label: 'Created On' } ]
+  }
+  CreatedOn;
+
+  /* --- 3. Hidden Technical & Fintech Fields (Not visible to Employee) --- */
+  @UI.hidden: true
+  CurrencyCode;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  PaymentQrUrl;
+
+  @UI.hidden: true
+  ReceiptFile;
+
+  @UI.hidden: true
+  ReceiptFilename;
+
+  @UI.hidden: true
+  ReceiptMimetype;
+}

@@ -1,0 +1,131 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Purchase Requisition (Manager Review)',
+    typeNamePlural: 'Pending Approvals',
+    typeImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bd/Odisha_University_of_Technology_and_Research_Logo.png',
+    title: { type: #STANDARD, label: 'Purchase Request', value: 'RequestNumber' },
+    description: { type: #STANDARD, value: 'RequestTitle' }
+  }
+}
+annotate view ZC_PR_SU_MGR_HDR with
+{
+  @UI.facet: [
+    {
+      id: 'HeaderData',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Requisition Justification & Budget',
+      position: 10
+    },
+    {
+      id: 'ItemsData',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Requested Items',
+      position: 20,
+      targetElement: '_Items'
+    },
+    /* ADD THIS LINE: */
+    { id: 'AuditLog',  
+      purpose: #STANDARD, 
+      type: #LINEITEM_REFERENCE,     
+     label: 'Audit History',   
+      position: 30, 
+      targetElement: '_History' }
+  ]
+
+  @UI.hidden: true
+  PurchaseRequestUuid;
+
+  @UI: {
+    lineItem:       [ { position: 10, label: 'PR Number' },
+                      { type: #FOR_ACTION, dataAction: 'Approve', label: 'Approve Request', position: 1 },
+                      { type: #FOR_ACTION, dataAction: 'Reject', label: 'Reject Request', position: 2 } ],
+    identification: [ { position: 10, label: 'PR Number' },
+                      { type: #FOR_ACTION, dataAction: 'Approve', label: 'Approve Request', position: 1 },
+                      { type: #FOR_ACTION, dataAction: 'Reject', label: 'Reject Request', position: 2 } ],
+    selectionField: [ { position: 10 } ]
+  }
+  RequestNumber;
+
+  @UI: {
+    lineItem:       [ { position: 20, label: 'Title' } ],
+    identification: [ { position: 20, label: 'Request Title' } ],
+    selectionField: [ { position: 20 } ]
+  }
+  RequestTitle;
+
+  @UI: {
+    identification: [ { position: 30, label: 'Description / Business Justification' } ]
+  }
+  RequestDescription;
+
+  @UI: {
+    lineItem:       [ { position: 30, label: 'Requester' } ],
+    identification: [ { position: 40, label: 'Requester Employee' } ],
+    textArrangement: #TEXT_ONLY
+  }
+  RequesterUuid;
+
+  @UI.hidden: true
+  RequesterName;
+
+  @UI: {
+    lineItem:       [ { position: 40, label: 'Required By Date' } ],
+    identification: [ { position: 50, label: 'Required By Date' } ]
+  }
+  RequiredByDate;
+
+  @UI: {
+    lineItem:       [ { position: 50, label: 'Status' } ],
+    identification: [ { position: 60, label: 'Current Status' } ],
+    selectionField: [ { position: 30 } ]
+  }
+  Status;
+
+  @UI: {
+    lineItem:       [ { position: 60, label: 'Total Amount' } ],
+    identification: [ { position: 70, label: 'Total Budget Required' } ]
+  }
+  OverallAmount;
+
+  @UI: {
+    identification: [ { position: 80, label: 'Rejection Reason (Fill before rejecting)' } ]
+  }
+  RejectionReason;
+
+  @UI: {
+    identification: [ { position: 90, label: 'Created By' } ]
+  }
+  CreatedBy;
+
+  @UI: {
+    identification: [ { position: 100, label: 'Created On' } ]
+  }
+  CreatedOn;
+
+  @UI.hidden: true
+  VendorUuid;
+
+  @UI.hidden: true
+  CurrencyCode;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  PaymentQrUrl;
+
+  @UI.hidden: true
+  ReceiptFile;
+
+  @UI.hidden: true
+  ReceiptFilename;
+
+  @UI.hidden: true
+  ReceiptMimetype;
+}

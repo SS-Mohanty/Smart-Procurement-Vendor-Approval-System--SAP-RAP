@@ -1,0 +1,150 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Procurement Requisition (Officer Window)',
+    typeNamePlural: 'Approved Procurement Tasks',
+    typeImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bd/Odisha_University_of_Technology_and_Research_Logo.png',
+    title: { type: #STANDARD, label: 'Purchase Request', value: 'RequestNumber' },
+    description: { type: #STANDARD, value: 'RequestTitle' }
+  }
+}
+annotate view ZC_PR_SU_OFF_HDR with
+{
+  @UI.facet: [
+    {
+      id: 'HeaderData',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Procurement Information',
+      position: 10
+    },
+    {
+      id: 'FintechData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'PhonePe UPI Gateway & Voucher Receipt',
+      position: 20,
+      targetQualifier: 'FintechGroup'
+    },
+    {
+      id: 'ItemsData',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Approved Items',
+      position: 30,
+      targetElement: '_Items'
+    },
+    /* ADD THIS LINE: */
+    { id: 'AuditLog',    
+    purpose: #STANDARD, type: #LINEITEM_REFERENCE,       
+    label: 'Audit History',   
+     position: 40, 
+     targetElement: '_History' }
+  ]
+
+  @UI.hidden: true
+  PurchaseRequestUuid;
+
+  @UI: {
+    lineItem:       [ { position: 10, label: 'PR Number' },
+                      { type: #FOR_ACTION, dataAction: 'AssignVendor', label: '1. Assign Vendor', position: 1 },
+                      { type: #FOR_ACTION, dataAction: 'GenerateReceipt', label: '2. Generate Receipt', position: 2 },
+                      { type: #FOR_ACTION, dataAction: 'Complete', label: '3. Complete Order', position: 3 } ],
+    identification: [ { position: 10, label: 'PR Number' },
+                      { type: #FOR_ACTION, dataAction: 'AssignVendor', label: '1. Assign Vendor', position: 1 },
+                      { type: #FOR_ACTION, dataAction: 'GenerateReceipt', label: '2. Generate Receipt', position: 2 },
+                      { type: #FOR_ACTION, dataAction: 'Complete', label: '3. Complete Order', position: 3 } ],
+    selectionField: [ { position: 10 } ],
+    /* NEW: Renders PR Number as a clickable blue link in the Fintech section to open the 450x450 QR Photo! */
+    fieldGroup:     [ { 
+      qualifier: 'FintechGroup', 
+      position: 11, 
+      label: 'Open Large QR Photo (Click Link)', 
+      type: #WITH_URL, 
+      url: 'PaymentQrUrl' 
+    } ]
+  }
+  RequestNumber;
+
+  @UI: {
+    lineItem:       [ { position: 20, label: 'Title' } ],
+    identification: [ { position: 20, label: 'Request Title' } ],
+    selectionField: [ { position: 20 } ]
+  }
+  RequestTitle;
+
+  @UI: {
+    lineItem:       [ { position: 30, label: 'Requester' } ],
+    identification: [ { position: 40, label: 'Requester Employee' } ],
+    textArrangement: #TEXT_ONLY
+  }
+  RequesterUuid;
+
+  @UI.hidden: true
+  RequesterName;
+
+  @UI: {
+    lineItem:       [ { position: 45, label: 'Selected Supplier' } ],
+    identification: [ { position: 45, label: 'Select Supplier Vendor' } ],
+    textArrangement: #TEXT_ONLY
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_PR_SU_VENDOR', element: 'VendorUuid' } }]
+  VendorUuid;
+
+  /* Hide the raw VendorName column from showing as a duplicate field */
+  @UI.hidden: true
+  VendorName;
+
+  @UI: {
+    lineItem:       [ { position: 50, label: 'Required By Date' } ],
+    identification: [ { position: 50, label: 'Required By Date' } ]
+  }
+  RequiredByDate;
+
+  @UI: {
+    lineItem:       [ { position: 60, label: 'Status' } ],
+    identification: [ { position: 60, label: 'Current Status' } ],
+    selectionField: [ { position: 30 } ]
+  }
+  Status;
+
+  @UI: {
+    lineItem:       [ { position: 70, label: 'Total Amount' } ],
+    identification: [ { position: 70, label: 'Approved Budget Total' } ]
+  }
+  OverallAmount;
+
+  /* --- FINTECH GROUP: Renders QR Code Image & Clickable Download Voucher --- */
+/* Renders ONE clean scannable QR Code inside the bottom PhonePe section */
+ /* 1. Renders the embedded QR thumbnail on the screen */
+  @UI: {
+    fieldGroup: [ { qualifier: 'FintechGroup', position: 10, label: 'PhonePe UPI QR Code' } ]
+  }
+  PaymentQrUrl;
+
+  
+  @UI: {
+    fieldGroup:     [ { qualifier: 'FintechGroup', position: 20, label: 'Download Procurement Voucher' } ]
+  }
+  ReceiptFile;
+
+  @UI.hidden: true
+  ReceiptFilename;
+
+  @UI.hidden: true
+  ReceiptMimetype;
+
+  @UI: {
+    identification: [ { position: 80, label: 'Description' } ]
+  }
+  RequestDescription;
+
+  @UI.hidden: true
+  CurrencyCode;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI.hidden: true
+  LastChangedAt;
+}

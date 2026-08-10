@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service Definition - Employee PR App'
+define service ZUI_PR_SU_EMP_O4 {
+  expose ZC_PR_SU_EMP_HDR  as PurchaseRequest;
+  expose ZC_PR_SU_EMP_ITEM as PurchaseRequestItem;
+  expose ZI_PR_SU_EMPLOYEE as EmployeeValueHelp;
+  expose ZI_PR_SU_VENDOR   as VendorValueHelp;
+  expose ZC_PR_SU_EMP_HIST as ApprovalHistory;
+}

@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service Definition - Officer PR App'
+define service ZUI_PR_SU_OFF_O4 {
+  expose ZC_PR_SU_OFF_HDR  as PurchaseRequest;
+  expose ZC_PR_SU_OFF_ITEM as PurchaseRequestItem;
+  expose ZC_PR_SU_OFF_HIST as ApprovalHistory;
+  expose ZI_PR_SU_EMPLOYEE as EmployeeValueHelp;
+  expose ZI_PR_SU_VENDOR   as VendorValueHelp;
+}
