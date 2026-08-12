@@ -1,4 +1,4 @@
-# 🏢 Smart Procurement Vendor Approval System (SAP RAP)
+#  Smart Procurement Vendor Approval System (SAP RAP)
 
 > **Cloud-native enterprise procurement workflow application built with SAP ABAP Cloud, RAP (RESTful ABAP Programming Model), OData V4, and SAP Fiori Elements.**
 
@@ -11,11 +11,11 @@ This application automates the end-to-end requisition-to-approval lifecycle. Mov
 
 ## 2. Key Enterprise Features
 
-* 🔐 **Multi-Persona Architecture (RBAC):** Three isolated Fiori Elements applications (Employee, Manager, Procurement Officer) powered by distinct CDS Projection Views to ensure strict functional data isolation.
-* ⚙️ **Strict State Machine & Feature Control:** Dynamic UI action control (`Submit`, `Approve`, `Reject`, `AssignVendor`, `Complete`). Buttons and edit capabilities are dynamically locked/rendered based on the exact lifecycle status of the request.
-* 📝 **Parameterized Actions:** Implementation of abstract CDS entities to trigger native Fiori dialog popups (e.g., capturing mandatory "Rejection Reasons" directly from the Manager).
-* 🛡️ **Immutable Audit Logging (EML):** Bypasses standard SQL and Late Savers to utilize native **Entity Manipulation Language (EML)**. This ensures every status change, actor, and timestamp is logged securely alongside the RAP draft framework.
-* 🔗 **Modern External Integrations:**
+*  **Multi-Persona Architecture (RBAC):** Three isolated Fiori Elements applications (Employee, Manager, Procurement Officer) powered by distinct CDS Projection Views to ensure strict functional data isolation.
+*  **Strict State Machine & Feature Control:** Dynamic UI action control (`Submit`, `Approve`, `Reject`, `AssignVendor`, `Complete`). Buttons and edit capabilities are dynamically locked/rendered based on the exact lifecycle status of the request.
+*  **Parameterized Actions:** Implementation of abstract CDS entities to trigger native Fiori dialog popups (e.g., capturing mandatory "Rejection Reasons" directly from the Manager).
+*  **Immutable Audit Logging (EML):** Bypasses standard SQL and Late Savers to utilize native **Entity Manipulation Language (EML)**. This ensures every status change, actor, and timestamp is logged securely alongside the RAP draft framework.
+*  **Modern External Integrations:**
   * **REST APIs:** Dynamic generation of vendor UPI payment URLs converted into live QR codes via external API injection.
   * **Binary File Generation:** ABAP string-to-binary (`XSTRING`) conversions to dynamically generate and attach downloadable `.txt` procurement vouchers.
 
