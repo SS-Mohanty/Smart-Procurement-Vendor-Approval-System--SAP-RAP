@@ -1,0 +1,119 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Purchase Request',
+    typeNamePlural: 'Purchase Requests',
+    typeImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bd/Odisha_University_of_Technology_and_Research_Logo.png',     // <-- REQUIREMENT 1: Renders OUTR Logo in UI Header!
+    title: { type: #STANDARD, label: 'Purchase Request', value: 'request_number' },
+    description: { type: #STANDARD, value: 'request_title' }
+  }
+}
+annotate view ZC_PROJ_PR_HDR with
+{
+  /* --- 1. Object Page Layout (Facets) --- */
+  @UI.facet: [
+    {
+      id: 'HeaderData',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'General Information',
+      position: 10
+    },
+    {
+      id: 'ItemsData',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Requested Items',
+      position: 20,
+      targetElement: '_Items'
+    }
+   
+  ]
+
+  /* --- 2. Field-Level UI Annotations --- */
+  @UI.hidden: true
+  purchase_request_uuid;
+
+  @UI: {
+    lineItem:       [ { position: 10, label: 'Request Number' },
+                      { type: #FOR_ACTION, dataAction: 'Submit', label: 'Submit', position: 1 },
+                      { type: #FOR_ACTION, dataAction: 'Approve', label: 'Approve', position: 2 },
+                      { type: #FOR_ACTION, dataAction: 'Reject', label: 'Reject', position: 3 },
+                      { type: #FOR_ACTION, dataAction: 'AssignVendor', label: 'Assign Vendor', position: 4 },
+                      { type: #FOR_ACTION, dataAction: 'Complete', label: 'Complete', position: 5 } ],
+    identification: [ { position: 10, label: 'Request Number' } ],
+    selectionField: [ { position: 10 } ]
+  }
+  request_number;
+
+  @UI: {
+    lineItem:       [ { position: 20, label: 'Title' } ],
+    identification: [ { position: 20, label: 'Title' } ]
+  }
+  request_title;
+
+  @UI: {
+    identification: [ { position: 30, label: 'Description' } ]
+  }
+  request_description;
+
+  @UI: {
+    lineItem:       [ { position: 30, label: 'Requester' } ],
+    identification: [ { position: 40, label: 'Requester' } ],
+    textArrangement: #TEXT_ONLY
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_PROJ_EMPLOYEE', element: 'employee_uuid' } }]
+  requester_uuid;
+
+  @UI: {
+    lineItem:       [ { position: 40, label: 'Assigned Vendor' } ],
+    identification: [ { position: 50, label: 'Assigned Vendor' } ],
+    textArrangement: #TEXT_ONLY
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_PROJ_VENDOR', element: 'vendor_uuid' } }]
+  vendor_uuid;
+
+  @UI: {
+    lineItem:       [ { position: 50, label: 'Required By' } ],
+    identification: [ { position: 60, label: 'Required By Date' } ]
+  }
+  required_by_date;
+
+  @UI: {
+    lineItem:       [ { position: 60, label: 'Status' } ],
+    identification: [ { position: 70, label: 'Status' } ],
+    selectionField: [ { position: 20 } ]
+  }
+  status;
+
+  @UI: {
+    lineItem:       [ { position: 70, label: 'Total Amount' } ],
+    identification: [ { position: 80, label: 'Total Amount' } ]
+  }
+  overall_amount;
+
+  @UI.hidden: true
+  currency_code;
+
+  @UI: {
+    identification: [ { position: 90, label: 'Created By' } ]
+  }
+  created_by;
+
+  @UI: {
+    identification: [ { position: 100, label: 'Created On' } ]
+  }
+  created_on;
+
+  @UI.hidden: true
+  local_last_changed_at;
+
+  @UI.hidden: true
+  last_changed_at;
+
+  @UI.hidden: true
+  RequesterName;
+
+  @UI.hidden: true
+  VendorName;
+}

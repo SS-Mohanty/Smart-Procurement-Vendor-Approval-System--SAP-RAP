@@ -1,0 +1,119 @@
+managed implementation in class zbp_i_proj_pr_hdr unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_PROJ_PR_HDR alias PurchaseRequest
+persistent table zproj_pr_hdr
+draft table zproj_pr_hdr_d
+lock master total etag last_changed_at
+authorization master ( global )
+etag master local_last_changed_at
+with additional save
+{
+  create;
+  update ( features : instance );
+  delete ( features : instance );
+  association _Items { create; with draft; }
+
+  // Automatic UUID numbering by SAP Framework
+  field ( numbering : managed, readonly ) purchase_request_uuid;
+
+  // Read-only fields controlled by backend logic
+  field ( readonly ) request_number,
+                     status,
+                     overall_amount,
+                     created_by,
+                     created_on,
+                     last_changed_at,
+                     local_last_changed_at;
+
+  // Mandatory input fields on UI
+  field ( mandatory ) request_title,
+                      required_by_date,
+                      requester_uuid;
+
+  // Draft Lifecycle Actions required by strict(2)
+  draft action ( features : instance ) Edit;       // <-- CRITICAL FIX: Controls Object Page Edit button!
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validateRequester;
+    validation validateTitle;
+    validation validateRequiredDate;
+    validation validateVendorBeforeComplete;
+    validation PurchaseRequestItem~validateQuantity;
+    validation PurchaseRequestItem~validatePrice;
+  }
+
+  // Custom Workflow Actions
+  action ( features : instance ) Submit result [1] $self;
+  action ( features : instance ) Approve result [1] $self;
+  action ( features : instance ) Reject result [1] $self;
+  action ( features : instance ) Complete result [1] $self;
+  action ( features : instance ) AssignVendor result [1] $self;
+
+  // Automated Determinations
+  determination setDefaultStatus on modify { create; }
+  determination generateRequestNumber on modify { create; }
+
+  // Business Rules / Validations
+  validation validateRequester on save { field requester_uuid; create; }
+  validation validateTitle on save { field request_title; create; update; }
+  validation validateRequiredDate on save { field required_by_date; create; update; }
+  validation validateVendorBeforeComplete on save { field status, vendor_uuid; create; update; }
+
+  // Mapping DB fields to CDS View fields
+  mapping for zproj_pr_hdr
+  {
+    purchase_request_uuid = purchase_request_uuid;
+    request_number        = request_number;
+    requester_uuid        = requester_uuid;
+    vendor_uuid           = vendor_uuid;
+    request_title         = request_title;
+    request_description   = request_description;
+    required_by_date      = required_by_date;
+    status                = status;
+    overall_amount        = overall_amount;
+    currency_code         = currency_code;
+    created_by            = created_by;
+    created_on            = created_on;
+    local_last_changed_at = local_last_changed_at;
+    last_changed_at       = last_changed_at;
+  }
+}
+
+define behavior for ZI_PROJ_PR_ITEM alias PurchaseRequestItem
+persistent table zproj_pr_item
+draft table zproj_pr_item_d
+lock dependent by _Header
+authorization dependent by _Header
+etag master local_last_changed_at
+{
+  update;
+  delete;
+  association _Header { with draft; }
+
+  field ( numbering : managed, readonly ) purchase_request_item_uuid;
+  field ( readonly ) purchase_request_uuid, local_last_changed_at;
+  field ( mandatory ) item_description, quantity, unit_price, currency_code;
+
+  determination calculateTotalAmount on modify { field quantity, unit_price; create; update; delete; }
+
+  validation validateQuantity on save { field quantity; create; update; }
+  validation validatePrice on save { field unit_price; create; update; }
+
+  mapping for zproj_pr_item
+  {
+    purchase_request_item_uuid = purchase_request_item_uuid;
+    purchase_request_uuid      = purchase_request_uuid;
+    item_number                = item_number;
+    item_description           = item_description;
+    quantity                   = quantity;
+    unit_of_measure            = unit_of_measure;
+    unit_price                 = unit_price;
+    currency_code              = currency_code;
+    local_last_changed_at      = local_last_changed_at;
+  }
+}

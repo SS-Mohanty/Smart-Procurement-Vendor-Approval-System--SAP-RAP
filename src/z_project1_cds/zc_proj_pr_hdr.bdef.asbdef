@@ -1,0 +1,34 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_PROJ_PR_HDR alias PurchaseRequest
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Submit;
+  use action Approve;
+  use action Reject;
+  use action Complete;
+  use action AssignVendor;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  // Notice: simply { create; } without "with draft;"
+  use association _Items { create; }
+}
+
+define behavior for ZC_PROJ_PR_ITEM alias PurchaseRequestItem
+{
+  use update;
+  use delete;
+
+  // Notice: no curly braces needed here in projection
+  use association _Header;
+}
