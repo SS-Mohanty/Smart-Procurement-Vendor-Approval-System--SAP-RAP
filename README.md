@@ -30,7 +30,23 @@ This application automates the end-to-end requisition-to-approval lifecycle. Mov
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## 4. System Flowchart (Requisition-to-Approval Lifecycle)
+## 4. Future Enhancements 
+ - Row-Level Security (DCL): Implementing SAP Data Control Language (DCL) to enforce PFCG role-based authorizations, ensuring managers can only query requisitions tied to their specific department/cost center.
+
+ - Virtual Elements: Utilizing the if_sadl_exit_calc_element_read interface to calculate dynamic, transient UI fields at runtime (e.g., live "Days Pending" or "Budget Variance" counters) without persisting them in the HANA database.
+
+ - Test-Driven Development (TDD): Building automated ABAP Unit Tests leveraging the RAP BO Test Double Framework (CL_ABAP_BEHV_TEST_ENVIRONMENT) to validate the state machine without UI dependencies.
+
+ - Dynamic Tender & Budget Logic: Extending the backend data model and determinations to calculate remaining departmental budgets against the active tender amount, dynamically locking approvals if budgets are exceeded.
+
+- Analytical Dashboards: Deploying an SAP Fiori Analytical List Page (ALP) utilizing @Analytics.query: true CDS annotations to visualize real-time procurement spending trends.
+
+- REST-Driven Event Notifications: Bypassing native cloud SMTP restrictions by integrating a custom HTTP client class to trigger external REST-based email APIs (e.g., SendGrid) for immediate vendor and manager alerts, if BTP trail allows.
+
+---------------------------------------------------------
+
+
+## 5. System Flowchart (Requisition-to-Approval Lifecycle)
 
 ```text
  [ EMPLOYEE PERSONA ]
